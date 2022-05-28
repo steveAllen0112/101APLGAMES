@@ -1,0 +1,85 @@
+∇ Z←ACEYDU;Q;A;B;C;cards;M;UI;W;L;insults
+    ⍝ Game of Acey-Ducey
+    ⍝ Written in BASIC by Bill Palmy
+    ⍝ Adlai Stephenson High School, Prairie View, IL
+    ⍝ Translated to RSTS/E by Dave AHL, Digital (aka DEC)
+    ⍝ Translated to APL and updated by Steve Allen
+
+    ⍝ RETURNS: Win Count, Loss Count, Balance
+
+    'ACEY-DUCEY IS PLAYED IN THE FOLLOWING MANNER:'
+    'THE DEALER (COMPUTER) DEALS TWO CARDS FACE UP. '
+    'YOU HAVE THE OPTION TO BET OR NOT TO BET DEPENDING'
+    'ON WHETHER OR NOT YOU FEEL THE NEXT CARD WILL HAVE'
+    'A VALUE BETWEEN THE FIRST TWO. '
+    'IF YOU DO NOT WANT TO BET, INPUT A 0. '
+    ''
+
+    cards←(⍕¨1+⍳8),'JACK' 'QUEEN' 'KING' 'ACE'
+    insults←'CHICKEN!!' 'SCARED, HUH?' 'YEAH, THAT DOESN''T MAKE ANY SENSE TO ME, EITHER'
+
+    INIT:Q←100
+    W←L←0
+
+    SHOWBALANCE:'YOU HAVE ',⍕Q,' DOLLARS'
+
+    CHOOSE:'DEAL (D) OR QUIT (Q)? '
+    UI←⍞
+    →('q'=⎕C UI)/EXIT
+    →('d'=⎕C UI)/DEAL
+    'WHAT?'
+    →CHOOSE
+
+    DEAL:'HERE ARE YOUR NEXT TWO CARDS...'
+    (A B)←{⍵[⍋⍵]}2?12  ⍝ This replaces lines 270-390
+    cards[A]
+    cards[B]
+    ''
+
+    BET:'WHAT IS YOUR BET? '
+    M←⎕
+    →(M>0)/CHECKFUNDS
+    insults[1?≢insults]
+    ''
+    →SHOWBALANCE
+
+    CHECKFUNDS:→(M≤Q)/REVEAL
+    'SORRY, MY FRIEND, BUT YOU BET TOO MUCH'
+    'YOU HAVE ONLY ',⍕Q,' DOLLARS TO BET.'
+    →BET
+
+    REVEAL:C←1?12 ⍝ Lines 730-890
+    cards[C]
+
+    →((A<C)∧C≤B)/WIN
+
+    LOSE:L←L+1
+    'SORRY, YOU LOSE.'
+    →(M≥Q)/BLOWN
+    Q←Q-M
+    →SHOWBALANCE
+
+    BLOWN:''
+    'SORRY, FRIEND, BUT YOU BLEW YOUR WAD. '
+
+    TRYAGAIN:'TRY AGAIN? (Y OR N)'
+    UI←⍞
+    →('y'=⎕C UI)/INIT
+    →('n'=⎕C UI)/EXIT
+    'WHAT?'
+    →TRYAGAIN
+
+    WIN:W←W+1
+    'YOU WIN!!!'
+    Q←Q+M
+    →SHOWBALANCE
+
+    EXIT:→(0<+/W L)/FUN
+    'WELL GOODBYE THEN'
+    Q←0
+    →RETURN
+
+    FUN:'O.K. HOPE YOU HAD FUN!!'
+
+    RETURN:Z←W L Q
+∇
